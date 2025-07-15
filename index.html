@@ -226,8 +226,8 @@
         const sprintStates = {};
         projectData
           .filter((p) => p.type === "sprint")
-          .forEach((sprint, index) => {
-            sprintStates[sprint.id] = index === 0;
+          .forEach((sprint) => {
+            sprintStates[sprint.id] = false; // Todos los sprints empiezan cerrados
           });
 
         function formatDate(dateStr) {
