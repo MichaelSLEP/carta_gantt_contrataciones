@@ -1,448 +1,841 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Diagrama de Gantt Responsivo: Proyecto SLEP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f7fa;
-        }
-        .gantt-container-desktop {
-            display: grid;
-            grid-template-columns: 350px 1fr; /* Columna de tareas más ancha para las fechas */
-        }
-        .gantt-task-bar {
-            position: absolute;
-            height: 32px;
-            background-color: #3b82f6;
-            border-radius: 6px;
-            color: white;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-        .gantt-sprint-bar {
-            position: absolute;
-            height: 10px;
-            background-color: #1e3a8a; /* Azul oscuro para resumen */
-            border-radius: 9999px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0.8;
-        }
-        .gantt-task-bar:hover, .gantt-sprint-bar:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
-        .gantt-milestone {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            background-color: #be185d;
-            transform: rotate(45deg);
-            border-radius: 4px;
-            border: 1px solid #831843;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-         .gantt-milestone:hover {
-            transform: rotate(45deg) scale(1.2);
-        }
-        .tooltip {
-            position: absolute;
-            visibility: hidden;
-            background-color: #1f2937;
-            color: #fff;
-            text-align: left;
-            border-radius: 8px;
-            padding: 10px;
-            z-index: 10;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            font-size: 13px;
-            white-space: nowrap;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transform: translateX(-50%);
-            left: 50%;
-            bottom: 125%;
-        }
-        .gantt-task-bar:hover .tooltip, .gantt-milestone:hover .tooltip, .gantt-sprint-bar:hover .tooltip {
-            visibility: visible;
-            opacity: 1;
-        }
-        .today-marker {
-            position: absolute;
-            width: 3px;
-            background-color: #ef4444;
-            opacity: 0.7;
-            z-index: 5;
-            border-radius: 2px;
-        }
-        .today-label {
-            position: absolute;
-            top: -28px;
-            left: -18px;
-            background-color: #ef4444;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .task-row, .sprint-header {
-            transition: background-color 0.2s;
-        }
-        .sprint-header {
-            cursor: pointer;
-        }
-        .sprint-header:hover {
-            background-color: #e5e7eb;
-        }
-        .hidden {
-            display: none;
-        }
-        .chevron {
-            transition: transform 0.3s ease;
-        }
-        .sprint-header[aria-expanded="true"] .chevron {
-            transform: rotate(90deg);
-        }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f4f7fa;
+      }
+      .gantt-container-desktop {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+      }
+      .gantt-task-bar {
+        position: absolute;
+        height: 32px;
+        background-color: #3b82f6;
+        border-radius: 6px;
+        color: white;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+      .gantt-sprint-bar {
+        position: absolute;
+        height: 10px;
+        background-color: #1e3a8a;
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0.8;
+      }
+      .gantt-task-bar:hover,
+      .gantt-sprint-bar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+      }
+      .gantt-milestone {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background-color: #be185d;
+        transform: rotate(45deg);
+        border-radius: 4px;
+        border: 1px solid #831843;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .gantt-milestone:hover {
+        transform: rotate(45deg) scale(1.2);
+      }
+      .tooltip {
+        position: absolute;
+        visibility: hidden;
+        background-color: #1f2937;
+        color: #fff;
+        text-align: left;
+        border-radius: 8px;
+        padding: 10px;
+        z-index: 10;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+        font-size: 13px;
+        white-space: nowrap;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transform: translateX(-50%);
+        left: 50%;
+        bottom: 125%;
+      }
+      .gantt-task-bar:hover .tooltip,
+      .gantt-milestone:hover .tooltip,
+      .gantt-sprint-bar:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+      }
+      .today-marker {
+        position: absolute;
+        width: 3px;
+        background-color: #ef4444;
+        opacity: 0.7;
+        z-index: 5;
+        border-radius: 2px;
+      }
+      .today-label {
+        position: absolute;
+        top: -28px;
+        left: -18px;
+        background-color: #ef4444;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .task-row,
+      .sprint-header {
+        transition: background-color 0.2s;
+      }
+      .sprint-header {
+        cursor: pointer;
+      }
+      .sprint-header:hover {
+        background-color: #e5e7eb;
+      }
+      .chevron {
+        transition: transform 0.3s ease;
+      }
+      .sprint-header[aria-expanded="true"] .chevron {
+        transform: rotate(90deg);
+      }
     </style>
-</head>
-<body class="p-4 md:p-6">
-    <div class="max-w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-        <div class="p-6 border-b bg-gray-50 rounded-t-xl">
-            <h1 class="text-2xl font-bold text-gray-900">Diagrama de Gantt: Proyecto Sistema de Contrataciones SLEP</h1>
-            <p class="text-gray-600 mt-1">Cronograma visual e interactivo del proyecto. Haz clic en un sprint para expandir/colapsar.</p>
-        </div>
-        <div id="gantt-chart" class="overflow-x-auto">
-            <!-- El contenido del diagrama se generará con JavaScript -->
-        </div>
+  </head>
+  <body class="p-4 md:p-6">
+    <div
+      class="max-w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden"
+    >
+      <div class="p-6 border-b bg-gray-50 rounded-t-xl">
+        <h1 class="text-2xl font-bold text-gray-900">
+          Diagrama de Gantt: Proyecto Sistema de Contrataciones SLEP
+        </h1>
+        <p class="text-gray-600 mt-1">
+          Cronograma visual e interactivo del proyecto. Haz clic en un sprint
+          para expandir/colapsar.
+        </p>
+      </div>
+      <div id="gantt-chart" class="overflow-x-auto">
+        <!-- El contenido del diagrama se generará con JavaScript -->
+      </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // --- DATOS DEL PROYECTO (CRONOGRAMA ACELERADO) ---
-            const projectData = [
-                { id: 's1', name: 'Sprint 1: Fundación y Arquitectura', start: '2025-06-25', end: '2025-07-11', type: 'sprint' },
-                { id: 1.1, name: 'Documentar flujos y reglas de negocio', start: '2025-06-25', end: '2025-06-27', parent: 's1' },
-                { id: 1.2, name: 'Diseñar esquemas de las 3 BDs', start: '2025-06-30', end: '2025-07-03', parent: 's1' },
-                { id: 1.3, name: 'Definir contratos de las 3 APIs', start: '2025-07-04', end: '2025-07-08', parent: 's1' },
-                { id: 1.4, name: 'Configurar repositorios y entornos', start: '2025-07-09', end: '2025-07-11', parent: 's1' },
-                { id: 1.6, name: 'Hito 1: Arquitectura y Diseño Aprobado', start: '2025-07-11', end: '2025-07-11', type: 'milestone', parent: 's1' },
-                
-                { id: 's2', name: 'Sprint 2: Construcción Servicio Dotación', start: '2025-07-14', end: '2025-07-25', type: 'sprint' },
-                { id: 2.1, name: 'Crear proyecto y conexión a BD', start: '2025-07-14', end: '2025-07-14', parent: 's2' },
-                { id: 2.2, name: 'Desarrollar endpoints CRUD y Auth', start: '2025-07-15', end: '2025-07-21', parent: 's2' },
-                { id: 2.3, name: 'Desarrollar carga masiva y asignación', start: '2025-07-22', end: '2025-07-24', parent: 's2' },
-                { id: 2.6, name: 'Escribir pruebas unitarias', start: '2025-07-25', end: '2025-07-25', parent: 's2' },
+      document.addEventListener("DOMContentLoaded", function () {
+        // --- DATOS DEL PROYECTO (CRONOGRAMA RECALCULADO) ---
+        const projectData = [
+          {
+            id: "s1",
+            name: "Sprint 1: Fundación y Arquitectura",
+            start: "2025-06-25",
+            end: "2025-07-18",
+            type: "sprint",
+          },
+          {
+            id: 1.1,
+            name: "Documentar flujos y reglas de negocio",
+            start: "2025-06-25",
+            end: "2025-07-02",
+            parent: "s1",
+          },
+          {
+            id: 1.2,
+            name: "Diseñar esquemas de las 3 BDs",
+            start: "2025-07-03",
+            end: "2025-07-09",
+            parent: "s1",
+          },
+          {
+            id: 1.3,
+            name: "Definir contratos de las 3 APIs",
+            start: "2025-07-10",
+            end: "2025-07-15",
+            parent: "s1",
+          },
+          {
+            id: 1.4,
+            name: "Configurar repositorios y entornos",
+            start: "2025-07-17",
+            end: "2025-07-18",
+            parent: "s1",
+          },
+          {
+            id: 1.6,
+            name: "Hito 1: Arquitectura y Diseño Aprobado",
+            start: "2025-07-18",
+            end: "2025-07-18",
+            type: "milestone",
+            parent: "s1",
+          },
 
-                { id: 's3', name: 'Sprint 3: Construcción Servicio Candidatos', start: '2025-07-28', end: '2025-08-08', type: 'sprint' },
-                { id: 3.1, name: 'Crear proyecto y conexión a BD', start: '2025-07-28', end: '2025-07-28', parent: 's3' },
-                { id: 3.2, name: 'Desarrollar endpoints CRUD y subida de CV', start: '2025-07-29', end: '2025-08-04', parent: 's3' },
-                { id: 3.4, name: 'Desarrollar búsqueda y filtros', start: '2025-08-05', end: '2025-08-07', parent: 's3' },
-                { id: 3.5, name: 'Escribir pruebas unitarias', start: '2025-08-08', end: '2025-08-08', parent: 's3' },
+          {
+            id: "s2",
+            name: "Sprint 2: Construcción Servicio Candidatos",
+            start: "2025-07-21",
+            end: "2025-08-01",
+            type: "sprint",
+          },
+          {
+            id: 2.1,
+            name: "Crear proyecto y conexión a BD",
+            start: "2025-07-21",
+            end: "2025-07-21",
+            parent: "s2",
+          },
+          {
+            id: 2.2,
+            name: "Desarrollar endpoints CRUD y subida de CV",
+            start: "2025-07-22",
+            end: "2025-07-28",
+            parent: "s2",
+          },
+          {
+            id: 2.3,
+            name: "Desarrollar búsqueda y filtros",
+            start: "2025-07-29",
+            end: "2025-07-31",
+            parent: "s2",
+          },
+          {
+            id: 2.4,
+            name: "Escribir pruebas unitarias",
+            start: "2025-08-01",
+            end: "2025-08-01",
+            parent: "s2",
+          },
 
-                { id: 's4', name: 'Sprint 4: Construcción Servicio Solicitudes', start: '2025-08-11', end: '2025-08-22', type: 'sprint' },
-                { id: 4.1, name: 'Crear proyecto y conexión a BD', start: '2025-08-11', end: '2025-08-11', parent: 's4' },
-                { id: 4.2, name: 'Desarrollar endpoints CRUD y derivación', start: '2025-08-12', end: '2025-08-18', parent: 's4' },
-                { id: 4.3, name: 'Implementar flujo de aprobación', start: '2025-08-19', end: '2025-08-21', parent: 's4' },
-                { id: 4.5, name: 'Escribir pruebas unitarias', start: '2025-08-22', end: '2025-08-22', parent: 's4' },
-                { id: 4.6, name: 'Hito 2: Backend Completo', start: '2025-08-22', end: '2025-08-22', type: 'milestone', parent: 's4' },
+          {
+            id: "s3",
+            name: "Sprint 3: Construcción Servicio Dotación",
+            start: "2025-08-04",
+            end: "2025-08-14",
+            type: "sprint",
+          },
+          {
+            id: 3.1,
+            name: "Crear proyecto y conexión a BD",
+            start: "2025-08-04",
+            end: "2025-08-04",
+            parent: "s3",
+          },
+          {
+            id: 3.2,
+            name: "Desarrollar endpoints CRUD y Auth",
+            start: "2025-08-05",
+            end: "2025-08-08",
+            parent: "s3",
+          },
+          {
+            id: 3.3,
+            name: "Desarrollar carga masiva y asignación",
+            start: "2025-08-11",
+            end: "2025-08-13",
+            parent: "s3",
+          },
+          {
+            id: 3.4,
+            name: "Escribir pruebas unitarias",
+            start: "2025-08-14",
+            end: "2025-08-14",
+            parent: "s3",
+          },
 
-                { id: 's5', name: 'Sprint 5: Frontend - Vistas de Gestión', start: '2025-08-25', end: '2025-09-05', type: 'sprint' },
-                { id: 5.1, name: 'Configurar proyecto y enrutamiento', start: '2025-08-25', end: '2025-08-26', parent: 's5' },
-                { id: 5.2, name: 'UI: Login y gestión de Dotación', start: '2025-08-27', end: '2025-09-01', parent: 's5' },
-                { id: 5.5, name: 'UI: Gestión de Candidatos', start: '2025-09-02', end: '2025-09-05', parent: 's5' },
-                
-                { id: 's6', name: 'Sprint 6: Frontend - Flujo de Solicitud', start: '2025-09-08', end: '2025-09-22', type: 'sprint' },
-                { id: 6.1, name: 'UI: Formulario de nueva solicitud', start: '2025-09-08', end: '2025-09-11', parent: 's6' },
-                { id: 6.3, name: 'UI: Bandeja de Entrada y Detalle', start: '2025-09-12', end: '2025-09-17', parent: 's6' },
-                { id: 6.5, name: 'UI: Lógica de aprobación', start: '2025-09-22', end: '2025-09-22', parent: 's6' },
-                { id: 6.6, name: 'Hito 3: Frontend Base Completo', start: '2025-09-22', end: '2025-09-22', type: 'milestone', parent: 's6' },
-                
-                { id: 's7', name: 'Sprint 7: Generación PDF y Notificaciones', start: '2025-09-23', end: '2025-10-03', type: 'sprint' },
-                { id: 7.1, name: 'Implementar librería de PDFs', start: '2025-09-23', end: '2025-09-24', parent: 's7' },
-                { id: 7.2, name: 'Crear plantillas HTML para documentos', start: '2025-09-25', end: '2025-09-30', parent: 's7' },
-                { id: 7.3, name: 'Desarrollar endpoint y servicio de correo', start: '2025-10-01', end: '2025-10-03', parent: 's7' },
+          {
+            id: "s4",
+            name: "Sprint 4: Construcción Servicio Solicitudes",
+            start: "2025-08-18",
+            end: "2025-08-29",
+            type: "sprint",
+          },
+          {
+            id: 4.1,
+            name: "Crear proyecto y conexión a BD",
+            start: "2025-08-18",
+            end: "2025-08-18",
+            parent: "s4",
+          },
+          {
+            id: 4.2,
+            name: "Desarrollar endpoints CRUD y derivación",
+            start: "2025-08-19",
+            end: "2025-08-22",
+            parent: "s4",
+          },
+          {
+            id: 4.3,
+            name: "Implementar flujo de aprobación",
+            start: "2025-08-25",
+            end: "2025-08-28",
+            parent: "s4",
+          },
+          {
+            id: 4.5,
+            name: "Escribir pruebas unitarias",
+            start: "2025-08-29",
+            end: "2025-08-29",
+            parent: "s4",
+          },
+          {
+            id: 4.6,
+            name: "Hito 2: Backend Completo",
+            start: "2025-08-29",
+            end: "2025-08-29",
+            type: "milestone",
+            parent: "s4",
+          },
 
-                { id: 's8', name: 'Sprints 8-9: Integración y Pruebas', start: '2025-10-06', end: '2025-10-24', type: 'sprint' },
-                { id: 8.2, name: 'UI: Asignación de candidato', start: '2025-10-06', end: '2025-10-08', parent: 's8' },
-                { id: 8.3, name: 'Pruebas manuales E2E', start: '2025-10-09', end: '2025-10-15', parent: 's8' },
-                { id: 8.5, name: 'Corrección de bugs y refinamiento', start: '2025-10-16', end: '2025-10-24', parent: 's8' },
-                { id: 8.6, name: 'Hito 4: Demo de Integración', start: '2025-10-24', end: '2025-10-24', type: 'milestone', parent: 's8' },
+          {
+            id: "s5",
+            name: "Sprint 5: Frontend - Vistas de Gestión",
+            start: "2025-09-01",
+            end: "2025-09-12",
+            type: "sprint",
+          },
+          {
+            id: 5.1,
+            name: "Configurar proyecto y enrutamiento",
+            start: "2025-09-01",
+            end: "2025-09-02",
+            parent: "s5",
+          },
+          {
+            id: 5.2,
+            name: "UI: Login y gestión de Dotación",
+            start: "2025-09-03",
+            end: "2025-09-08",
+            parent: "s5",
+          },
+          {
+            id: 5.5,
+            name: "UI: Gestión de Candidatos",
+            start: "2025-09-09",
+            end: "2025-09-12",
+            parent: "s5",
+          },
 
-                { id: 's9', name: 'Sprints 10-11: UAT y Despliegue', start: '2025-10-27', end: '2025-11-14', type: 'sprint' },
-                { id: 9.1, name: 'Preparar entorno y datos para UAT', start: '2025-10-27', end: '2025-10-28', parent: 's9' },
-                { id: 9.2, name: 'Ejecutar UAT y recoger feedback', start: '2025-10-29', end: '2025-10-30', parent: 's9' },
-                { id: 9.3, name: 'Configurar infraestructura en la nube', start: '2025-11-03', end: '2025-11-06', parent: 's9' },
-                { id: 9.4, name: 'Despliegue en producción (Go-Live)', start: '2025-11-07', end: '2025-11-11', parent: 's9' },
-                { id: 9.5, name: 'Redactar Manuales', start: '2025-11-12', end: '2025-11-14', parent: 's9' },
-                { id: 9.6, name: 'Hito 5: Puesta en Producción', start: '2025-11-14', end: '2025-11-14', type: 'milestone', parent: 's9' },
+          {
+            id: "s6",
+            name: "Sprint 6: Frontend - Flujo de Solicitud",
+            start: "2025-09-15",
+            end: "2025-09-26",
+            type: "sprint",
+          },
+          {
+            id: 6.1,
+            name: "UI: Formulario de nueva solicitud",
+            start: "2025-09-15",
+            end: "2025-09-17",
+            parent: "s6",
+          },
+          {
+            id: 6.3,
+            name: "UI: Bandeja de Entrada y Detalle",
+            start: "2025-09-22",
+            end: "2025-09-25",
+            parent: "s6",
+          },
+          {
+            id: 6.5,
+            name: "UI: Lógica de aprobación",
+            start: "2025-09-26",
+            end: "2025-09-26",
+            parent: "s6",
+          },
+          {
+            id: 6.6,
+            name: "Hito 3: Frontend Base Completo",
+            start: "2025-09-26",
+            end: "2025-09-26",
+            type: "milestone",
+            parent: "s6",
+          },
 
-                { id: 's10', name: 'Sprints 12-13: Soporte y Cierre', start: '2025-11-17', end: '2025-12-29', type: 'sprint' },
-                { id: 10.1, name: 'Soporte y monitoreo (3 semanas)', start: '2025-11-17', end: '2025-12-05', parent: 's10' },
-                { id: 10.2, name: 'Resolución de incidencias', start: '2025-12-09', end: '2025-12-26', parent: 's10' },
-                { id: 10.5, name: 'Reunión y Acta de Cierre', start: '2025-12-29', end: '2025-12-29', parent: 's10' },
-                { id: 10.6, name: 'Hito 6: Cierre de Proyecto', start: '2025-12-29', end: '2025-12-29', type: 'milestone', parent: 's10' },
-            ];
+          {
+            id: "s7",
+            name: "Sprint 7: Generación PDF y Notificaciones",
+            start: "2025-09-29",
+            end: "2025-10-08",
+            type: "sprint",
+          },
+          {
+            id: 7.1,
+            name: "Implementar librería de PDFs",
+            start: "2025-09-29",
+            end: "2025-09-30",
+            parent: "s7",
+          },
+          {
+            id: 7.2,
+            name: "Crear plantillas HTML para documentos",
+            start: "2025-10-01",
+            end: "2025-10-06",
+            parent: "s7",
+          },
+          {
+            id: 7.3,
+            name: "Desarrollar endpoint y servicio de correo",
+            start: "2025-10-07",
+            end: "2025-10-08",
+            parent: "s7",
+          },
 
-            const ganttChartContainer = document.getElementById('gantt-chart');
-            
-            const projectStartDate = new Date('2025-06-24T00:00:00');
-            const projectEndDate = new Date('2025-12-31T00:00:00'); 
-            
-            const sprintStates = {};
-            projectData.filter(p => p.type === 'sprint').forEach((sprint, index) => {
-                sprintStates[sprint.id] = (index === 0);
+          {
+            id: "s8",
+            name: "Sprints 8-9: Integración y Pruebas",
+            start: "2025-10-09",
+            end: "2025-10-22",
+            type: "sprint",
+          },
+          {
+            id: 8.2,
+            name: "UI: Asignación de candidato",
+            start: "2025-10-09",
+            end: "2025-10-10",
+            parent: "s8",
+          },
+          {
+            id: 8.3,
+            name: "Pruebas manuales E2E",
+            start: "2025-10-13",
+            end: "2025-10-16",
+            parent: "s8",
+          },
+          {
+            id: 8.5,
+            name: "Corrección de bugs y refinamiento",
+            start: "2025-10-17",
+            end: "2025-10-22",
+            parent: "s8",
+          },
+          {
+            id: 8.6,
+            name: "Hito 4: Demo de Integración",
+            start: "2025-10-22",
+            end: "2025-10-22",
+            type: "milestone",
+            parent: "s8",
+          },
+
+          {
+            id: "s9",
+            name: "Sprints 10-11: UAT y Despliegue",
+            start: "2025-10-23",
+            end: "2025-11-07",
+            type: "sprint",
+          },
+          {
+            id: 9.1,
+            name: "Preparar entorno y datos para UAT",
+            start: "2025-10-23",
+            end: "2025-10-24",
+            parent: "s9",
+          },
+          {
+            id: 9.2,
+            name: "Ejecutar UAT y recoger feedback",
+            start: "2025-10-27",
+            end: "2025-10-29",
+            parent: "s9",
+          },
+          {
+            id: 9.3,
+            name: "Configurar infraestructura en la nube",
+            start: "2025-10-30",
+            end: "2025-11-04",
+            parent: "s9",
+          },
+          {
+            id: 9.4,
+            name: "Despliegue en producción (Go-Live)",
+            start: "2025-11-05",
+            end: "2025-11-06",
+            parent: "s9",
+          },
+          {
+            id: 9.5,
+            name: "Redactar Manuales",
+            start: "2025-11-07",
+            end: "2025-11-07",
+            parent: "s9",
+          },
+          {
+            id: 9.6,
+            name: "Hito 5: Puesta en Producción",
+            start: "2025-11-07",
+            end: "2025-11-07",
+            type: "milestone",
+            parent: "s9",
+          },
+
+          {
+            id: "s10",
+            name: "Sprints 12-13: Soporte y Cierre",
+            start: "2025-11-10",
+            end: "2025-12-26",
+            type: "sprint",
+          },
+          {
+            id: 10.1,
+            name: "Soporte y monitoreo (3 semanas)",
+            start: "2025-11-10",
+            end: "2025-11-28",
+            parent: "s10",
+          },
+          {
+            id: 10.2,
+            name: "Resolución de incidencias",
+            start: "2025-12-01",
+            end: "2025-12-23",
+            parent: "s10",
+          },
+          {
+            id: 10.5,
+            name: "Reunión y Acta de Cierre",
+            start: "2025-12-26",
+            end: "2025-12-26",
+            parent: "s10",
+          },
+          {
+            id: 10.6,
+            name: "Hito 6: Cierre de Proyecto",
+            start: "2025-12-26",
+            end: "2025-12-26",
+            type: "milestone",
+            parent: "s10",
+          },
+        ];
+
+        const ganttChartContainer = document.getElementById("gantt-chart");
+
+        const projectStartDate = new Date("2025-06-24T00:00:00");
+        const projectEndDate = new Date("2025-12-27T00:00:00");
+
+        const sprintStates = {};
+        projectData
+          .filter((p) => p.type === "sprint")
+          .forEach((sprint, index) => {
+            sprintStates[sprint.id] = index === 0;
+          });
+
+        function formatDate(dateStr) {
+          const date = new Date(dateStr + "T00:00:00");
+          return date.toLocaleDateString("es-ES", {
+            day: "numeric",
+            month: "short",
+          });
+        }
+
+        function renderGantt() {
+          if (window.innerWidth < 768) {
+            renderMobileView();
+          } else {
+            renderDesktopView();
+          }
+        }
+
+        function renderMobileView() {
+          ganttChartContainer.innerHTML = "";
+          const list = document.createElement("div");
+          list.className = "p-4 space-y-2";
+
+          const sprints = projectData.filter((p) => p.type === "sprint");
+          sprints.forEach((sprint, index) => {
+            const sprintContainer = document.createElement("div");
+            sprintContainer.className =
+              "bg-white rounded-lg shadow-md overflow-hidden";
+
+            const sprintHeader = document.createElement("div");
+            sprintHeader.className =
+              "flex justify-between items-center p-4 cursor-pointer bg-gray-50 border-l-4 border-blue-500";
+            sprintHeader.innerHTML = `<div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg><span class="font-bold text-gray-800">${sprint.name}</span></div><svg class="h-5 w-5 chevron text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>`;
+
+            const sprintContent = document.createElement("div");
+            sprintContent.className =
+              "px-4 pb-2 space-y-2 transition-all duration-300";
+            sprintContent.style.maxHeight = "0";
+            sprintContent.style.overflow = "hidden";
+
+            const children = projectData.filter((p) => p.parent === sprint.id);
+            children.forEach((task) => {
+              const taskEl = document.createElement("div");
+              taskEl.className = "pt-2 border-t";
+              const isMilestone = task.type === "milestone";
+              const icon = isMilestone
+                ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.539 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>`;
+              taskEl.innerHTML = `<div class="flex items-center text-md ${
+                isMilestone ? "font-bold text-pink-700" : "text-gray-700"
+              }">${icon} ${
+                task.name
+              }</div><p class="text-sm text-gray-500 mt-1 pl-8">${formatDate(
+                task.start
+              )} - ${formatDate(task.end)}</p>`;
+              sprintContent.appendChild(taskEl);
             });
-            
-            function formatDate(dateStr) {
-                const date = new Date(dateStr + 'T00:00:00');
-                return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-            }
-            
-            function renderGantt() {
-                if (window.innerWidth < 768) {
-                    renderMobileView();
-                } else {
-                    renderDesktopView();
-                }
-            }
 
-            function renderMobileView() {
-                ganttChartContainer.innerHTML = '';
-                const list = document.createElement('div');
-                list.className = 'p-4 space-y-2';
-                
-                const sprints = projectData.filter(p => p.type === 'sprint');
-                sprints.forEach((sprint, index) => {
-                    const sprintContainer = document.createElement('div');
-                    sprintContainer.className = 'bg-white rounded-lg shadow-md overflow-hidden';
-                    
-                    const sprintHeader = document.createElement('div');
-                    sprintHeader.className = 'flex justify-between items-center p-4 cursor-pointer bg-gray-50 border-l-4 border-blue-500';
-                    sprintHeader.innerHTML = `<div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg><span class="font-bold text-gray-800">${sprint.name}</span></div><svg class="h-5 w-5 chevron text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>`;
-                    
-                    const sprintContent = document.createElement('div');
-                    sprintContent.className = 'px-4 pb-2 space-y-2 transition-all duration-300';
-                    sprintContent.style.maxHeight = '0';
-                    sprintContent.style.overflow = 'hidden';
-
-                    const children = projectData.filter(p => p.parent === sprint.id);
-                    children.forEach(task => {
-                        const taskEl = document.createElement('div');
-                        taskEl.className = 'pt-2 border-t';
-                        const isMilestone = task.type === 'milestone';
-                        const icon = isMilestone ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.539 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>`;
-                        taskEl.innerHTML = `<div class="flex items-center text-md ${isMilestone ? 'font-bold text-pink-700' : 'text-gray-700'}">${icon} ${task.name}</div><p class="text-sm text-gray-500 mt-1 pl-8">${formatDate(task.start)} - ${formatDate(task.end)}</p>`;
-                        sprintContent.appendChild(taskEl);
-                    });
-
-                    sprintHeader.addEventListener('click', () => {
-                        const isExpanded = sprintHeader.getAttribute('aria-expanded') === 'true';
-                        sprintHeader.setAttribute('aria-expanded', !isExpanded);
-                        sprintContent.style.maxHeight = isExpanded ? '0' : `${sprintContent.scrollHeight}px`;
-                        sprintHeader.querySelector('.chevron').style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(90deg)';
-                    });
-                    
-                    sprintContainer.appendChild(sprintHeader);
-                    sprintContainer.appendChild(sprintContent);
-                    list.appendChild(sprintContainer);
-
-                    if (sprintStates[sprint.id]) {
-                        sprintHeader.click();
-                    }
-                });
-                ganttChartContainer.appendChild(list);
-            }
-
-            function renderDesktopView() {
-                ganttChartContainer.innerHTML = '';
-                const ganttContainer = document.createElement('div');
-                ganttContainer.className = 'gantt-container-desktop';
-
-                const taskListContainer = document.createElement('div');
-                taskListContainer.className = 'bg-gray-50 border-r border-gray-200';
-                
-                const gridContainer = document.createElement('div');
-                gridContainer.className = 'relative';
-                
-                const timelineHeader = document.createElement('div');
-                timelineHeader.className = 'sticky top-0 z-10 flex bg-gray-100 border-b border-gray-300';
-                
-                const taskPanelWidth = 350;
-                const availableGridWidth = ganttChartContainer.offsetWidth - taskPanelWidth;
-                const diffTime = Math.abs(projectEndDate - projectStartDate);
-                const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                const dayWidth = availableGridWidth / totalDays;
-                
-                gridContainer.style.width = `${totalDays * dayWidth}px`;
-                timelineHeader.style.width = `${totalDays * dayWidth}px`;
-
-                const months = {};
-                for (let i = 0; i <= totalDays; i++) {
-                    const date = new Date(projectStartDate);
-                    date.setDate(projectStartDate.getDate() + i);
-                    const month = date.toLocaleString('es-ES', { month: 'long' });
-                    const year = date.getFullYear();
-                    const monthYear = `${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
-                    if (!months[monthYear]) months[monthYear] = 0;
-                    months[monthYear]++;
-                }
-
-                Object.keys(months).forEach(month => {
-                    const monthEl = document.createElement('div');
-                    monthEl.className = 'gantt-header-cell text-center font-semibold text-gray-700 p-2 text-sm';
-                    monthEl.textContent = month;
-                    monthEl.style.width = `${months[month] * dayWidth}px`;
-                    timelineHeader.appendChild(monthEl);
-                });
-                
-                const taskGridContainer = document.createElement('div');
-                
-                let visibleRowCount = 0;
-                projectData.forEach(task => {
-                    if (task.type === 'sprint' || sprintStates[task.parent]) {
-                        visibleRowCount++;
-                    }
-                });
-                taskGridContainer.style.height = `${visibleRowCount * 52}px`;
-
-                let visibleRowIndex = 0;
-                projectData.forEach(task => {
-                    const rowHeight = 52;
-                    const isSprint = task.type === 'sprint';
-                    const isVisible = isSprint || sprintStates[task.parent];
-
-                    if (!isVisible) return;
-
-                    const taskLabel = document.createElement('div');
-                    taskLabel.dataset.taskId = task.id;
-                    taskLabel.className = 'task-row flex items-center h-[52px] px-4 border-b border-gray-200 text-sm';
-                    
-                    const taskNameContainer = document.createElement('div');
-                    taskNameContainer.className = 'flex-1 flex items-center';
-                    
-                    const taskDateContainer = document.createElement('div');
-                    taskDateContainer.className = 'text-xs text-gray-500 font-mono';
-                    taskDateContainer.textContent = `${formatDate(task.start)} - ${formatDate(task.end)}`;
-
-                    let icon = '';
-
-                    if (isSprint) {
-                        taskLabel.classList.add('sprint-header', 'font-bold', 'bg-gray-100', 'text-gray-900');
-                        taskLabel.setAttribute('aria-expanded', sprintStates[task.id] ? 'true' : 'false');
-                        taskLabel.dataset.sprintToggle = task.id;
-                        icon = `<svg class="h-5 w-5 mr-3 text-blue-600 chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>`;
-                    } else {
-                        if (task.type === 'milestone') {
-                            taskLabel.classList.add('text-pink-700', 'italic');
-                            icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.539 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
-                        } else {
-                             taskLabel.style.paddingLeft = '2.5rem';
-                             taskLabel.classList.add('text-gray-700');
-                        }
-                    }
-                    taskNameContainer.innerHTML = `${icon}<span>${task.name}</span>`;
-                    taskLabel.appendChild(taskNameContainer);
-                    taskLabel.appendChild(taskDateContainer);
-                    taskListContainer.appendChild(taskLabel);
-
-                    const taskStartDate = new Date(task.start + 'T00:00:00');
-                    const taskEndDate = new Date(task.end + 'T00:00:00');
-                    taskEndDate.setDate(taskEndDate.getDate() + 1);
-                    const startOffset = (taskStartDate - projectStartDate) / (1000 * 60 * 60 * 24);
-                    const duration = (taskEndDate - taskStartDate) / (1000 * 60 * 60 * 24);
-
-                    let bar;
-                    if (task.type === 'milestone') {
-                        bar = document.createElement('div');
-                        bar.className = 'gantt-milestone gantt-bar';
-                        bar.style.left = `${(startOffset * dayWidth) + (dayWidth / 2) - 12}px`;
-                        bar.style.top = `${(visibleRowIndex * rowHeight) + 14}px`;
-                    } else if (task.type === 'sprint') {
-                        bar = document.createElement('div');
-                        bar.className = 'gantt-sprint-bar gantt-bar';
-                        bar.style.left = `${startOffset * dayWidth}px`;
-                        bar.style.width = `${duration * dayWidth}px`;
-                        bar.style.top = `${(visibleRowIndex * rowHeight) + 21}px`;
-                         if(sprintStates[task.id]) bar.classList.add('hidden');
-                    } else {
-                        bar = document.createElement('div');
-                        bar.className = 'gantt-task-bar gantt-bar flex items-center px-3 text-sm font-medium';
-                        bar.style.left = `${startOffset * dayWidth}px`;
-                        bar.style.width = `${duration * dayWidth - 4}px`;
-                        bar.style.top = `${(visibleRowIndex * rowHeight) + 10}px`;
-                        if (task.parent) {
-                            const sprintId = task.parent;
-                            const colors = ['#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#d946ef', '#ef4444', '#14b8a6', '#6366f1', '#f59e0b', '#ec4899'];
-                            const sprintIndex = projectData.filter(t => t.type === 'sprint').findIndex(t => t.id === sprintId);
-                            bar.style.backgroundColor = colors[sprintIndex % colors.length];
-                        }
-                    }
-
-                    if (bar) {
-                        const tooltip = document.createElement('div');
-                        tooltip.className = 'tooltip';
-                        tooltip.innerHTML = `<b>${task.name}</b><br>Inicio: ${formatDate(task.start)}<br>Fin: ${formatDate(task.end)}`;
-                        bar.appendChild(tooltip);
-                        taskGridContainer.appendChild(bar);
-                    }
-                    visibleRowIndex++;
-                });
-                
-                // The "Today" marker is dynamic because new Date() gets the current date every time the chart is rendered.
-                const today = new Date();
-                if (today >= projectStartDate && today <= projectEndDate) {
-                    const todayOffset = (new Date(today.toDateString()) - new Date(projectStartDate.toDateString())) / (1000 * 60 * 60 * 24);
-                    const marker = document.createElement('div');
-                    marker.className = 'today-marker';
-                    marker.style.left = `${todayOffset * dayWidth}px`;
-                    marker.style.height = `${visibleRowCount * 52}px`;
-                    const label = document.createElement('div');
-                    label.className = 'today-label';
-                    label.textContent = 'Hoy';
-                    marker.appendChild(label);
-                    taskGridContainer.appendChild(marker);
-                }
-
-                const headerPlaceholder = document.createElement('div');
-                headerPlaceholder.className = 'sticky top-0 z-20 h-[49px] bg-gray-200 border-b border-r border-gray-300 flex items-center p-4 font-bold text-gray-800';
-                headerPlaceholder.textContent = 'Tareas / Sprints';
-                
-                gridContainer.appendChild(taskGridContainer);
-                ganttContainer.appendChild(headerPlaceholder);
-                ganttContainer.appendChild(timelineHeader);
-                ganttContainer.appendChild(taskListContainer);
-                ganttContainer.appendChild(gridContainer);
-                ganttChartContainer.appendChild(ganttContainer);
-            }
-
-            ganttChartContainer.addEventListener('click', (e) => {
-                const header = e.target.closest('[data-sprint-toggle]');
-                if (header) {
-                    const sprintId = header.dataset.sprintToggle;
-                    sprintStates[sprintId] = !sprintStates[sprintId];
-                    renderGantt(); 
-                }
+            sprintHeader.addEventListener("click", () => {
+              sprintStates[sprint.id] = !sprintStates[sprint.id];
+              const isExpanded = sprintStates[sprint.id];
+              sprintHeader.setAttribute("aria-expanded", isExpanded);
+              sprintContent.style.maxHeight = isExpanded
+                ? `${sprintContent.scrollHeight}px`
+                : "0";
+              sprintHeader.querySelector(".chevron").style.transform =
+                isExpanded ? "rotate(90deg)" : "rotate(0deg)";
             });
 
+            sprintContainer.appendChild(sprintHeader);
+            sprintContainer.appendChild(sprintContent);
+            list.appendChild(sprintContainer);
+
+            if (sprintStates[sprint.id]) {
+              sprintHeader.setAttribute("aria-expanded", true);
+              sprintContent.style.maxHeight = `${sprintContent.scrollHeight}px`;
+              sprintHeader.querySelector(".chevron").style.transform =
+                "rotate(90deg)";
+            }
+          });
+          ganttChartContainer.appendChild(list);
+        }
+
+        function renderDesktopView() {
+          ganttChartContainer.innerHTML = "";
+          const ganttContainer = document.createElement("div");
+          ganttContainer.className = "gantt-container-desktop";
+
+          const taskListContainer = document.createElement("div");
+          taskListContainer.className = "bg-gray-50 border-r border-gray-200";
+
+          const gridContainer = document.createElement("div");
+          gridContainer.className = "relative";
+
+          const timelineHeader = document.createElement("div");
+          timelineHeader.className =
+            "sticky top-0 z-10 flex bg-gray-100 border-b border-gray-300";
+
+          const taskPanelWidth = 350;
+          const availableGridWidth =
+            ganttChartContainer.offsetWidth - taskPanelWidth;
+          const diffTime = Math.abs(projectEndDate - projectStartDate);
+          const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          const dayWidth = availableGridWidth / totalDays;
+
+          gridContainer.style.width = `${totalDays * dayWidth}px`;
+          timelineHeader.style.width = `${totalDays * dayWidth}px`;
+
+          const months = {};
+          for (let i = 0; i <= totalDays; i++) {
+            const date = new Date(projectStartDate);
+            date.setDate(projectStartDate.getDate() + i);
+            const month = date.toLocaleString("es-ES", { month: "long" });
+            const year = date.getFullYear();
+            const monthYear = `${
+              month.charAt(0).toUpperCase() + month.slice(1)
+            } ${year}`;
+            if (!months[monthYear]) months[monthYear] = 0;
+            months[monthYear]++;
+          }
+
+          Object.keys(months).forEach((month) => {
+            const monthEl = document.createElement("div");
+            monthEl.className =
+              "gantt-header-cell text-center font-semibold text-gray-700 p-2 text-sm";
+            monthEl.textContent = month;
+            monthEl.style.width = `${months[month] * dayWidth}px`;
+            timelineHeader.appendChild(monthEl);
+          });
+
+          const taskGridContainer = document.createElement("div");
+
+          let visibleRowCount = 0;
+          projectData.forEach((task) => {
+            if (task.type === "sprint" || sprintStates[task.parent]) {
+              visibleRowCount++;
+            }
+          });
+          taskGridContainer.style.height = `${visibleRowCount * 52}px`;
+
+          let visibleRowIndex = 0;
+          projectData.forEach((task) => {
+            const rowHeight = 52;
+            const isSprint = task.type === "sprint";
+            const isVisible = isSprint || sprintStates[task.parent];
+
+            if (!isVisible) return;
+
+            const taskLabel = document.createElement("div");
+            taskLabel.dataset.taskId = task.id;
+            taskLabel.className =
+              "task-row flex justify-between items-center h-[52px] px-4 border-b border-gray-200 text-sm";
+
+            const taskNameContainer = document.createElement("div");
+            taskNameContainer.className = "flex items-center";
+
+            const taskDateContainer = document.createElement("div");
+            taskDateContainer.className = "text-xs text-gray-500 font-mono";
+            taskDateContainer.textContent = `${formatDate(
+              task.start
+            )} - ${formatDate(task.end)}`;
+
+            let icon = "";
+
+            if (isSprint) {
+              taskLabel.classList.add(
+                "sprint-header",
+                "font-bold",
+                "bg-gray-100",
+                "text-gray-900"
+              );
+              taskLabel.setAttribute(
+                "aria-expanded",
+                sprintStates[task.id] ? "true" : "false"
+              );
+              taskLabel.dataset.sprintToggle = task.id;
+              icon = `<svg class="h-5 w-5 mr-3 text-blue-600 chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>`;
+            } else {
+              if (task.type === "milestone") {
+                taskLabel.classList.add("text-pink-700", "italic");
+                icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.539 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
+              } else {
+                taskLabel.style.paddingLeft = "2.5rem";
+                taskLabel.classList.add("text-gray-700");
+              }
+            }
+            taskNameContainer.innerHTML = `${icon}<span>${task.name}</span>`;
+            taskLabel.appendChild(taskNameContainer);
+            taskLabel.appendChild(taskDateContainer);
+            taskListContainer.appendChild(taskLabel);
+
+            const taskStartDate = new Date(task.start + "T00:00:00");
+            const taskEndDate = new Date(task.end + "T00:00:00");
+            taskEndDate.setDate(taskEndDate.getDate() + 1);
+            const startOffset =
+              (taskStartDate - projectStartDate) / (1000 * 60 * 60 * 24);
+            const duration =
+              (taskEndDate - taskStartDate) / (1000 * 60 * 60 * 24);
+
+            let bar;
+            if (task.type === "milestone") {
+              bar = document.createElement("div");
+              bar.className = "gantt-milestone gantt-bar";
+              bar.style.left = `${
+                startOffset * dayWidth + dayWidth / 2 - 12
+              }px`;
+              bar.style.top = `${visibleRowIndex * rowHeight + 14}px`;
+            } else if (task.type === "sprint") {
+              bar = document.createElement("div");
+              bar.className = "gantt-sprint-bar gantt-bar";
+              bar.style.left = `${startOffset * dayWidth}px`;
+              bar.style.width = `${duration * dayWidth}px`;
+              bar.style.top = `${visibleRowIndex * rowHeight + 21}px`;
+              if (sprintStates[task.id]) bar.classList.add("hidden");
+            } else {
+              bar = document.createElement("div");
+              bar.className =
+                "gantt-task-bar gantt-bar flex items-center px-3 text-sm font-medium";
+              bar.style.left = `${startOffset * dayWidth}px`;
+              bar.style.width = `${duration * dayWidth - 4}px`;
+              bar.style.top = `${visibleRowIndex * rowHeight + 10}px`;
+              if (task.parent) {
+                const sprintId = task.parent;
+                const colors = [
+                  "#3b82f6",
+                  "#10b981",
+                  "#f97316",
+                  "#8b5cf6",
+                  "#d946ef",
+                  "#ef4444",
+                  "#14b8a6",
+                  "#6366f1",
+                  "#f59e0b",
+                  "#ec4899",
+                ];
+                const sprintIndex = projectData
+                  .filter((t) => t.type === "sprint")
+                  .findIndex((t) => t.id === sprintId);
+                bar.style.backgroundColor = colors[sprintIndex % colors.length];
+              }
+            }
+
+            if (bar) {
+              const tooltip = document.createElement("div");
+              tooltip.className = "tooltip";
+              tooltip.innerHTML = `<b>${task.name}</b><br>Inicio: ${formatDate(
+                task.start
+              )}<br>Fin: ${formatDate(task.end)}`;
+              bar.appendChild(tooltip);
+              taskGridContainer.appendChild(bar);
+            }
+            visibleRowIndex++;
+          });
+
+          const today = new Date();
+          if (today >= projectStartDate && today <= projectEndDate) {
+            const todayOffset =
+              (new Date(today.toDateString()) -
+                new Date(projectStartDate.toDateString())) /
+              (1000 * 60 * 60 * 24);
+            const marker = document.createElement("div");
+            marker.className = "today-marker";
+            marker.style.left = `${todayOffset * dayWidth}px`;
+            marker.style.height = `${visibleRowCount * 52}px`;
+            const label = document.createElement("div");
+            label.className = "today-label";
+            label.textContent = "Hoy";
+            marker.appendChild(label);
+            taskGridContainer.appendChild(marker);
+          }
+
+          const headerPlaceholder = document.createElement("div");
+          headerPlaceholder.className =
+            "sticky top-0 z-20 bg-gray-200 border-b border-r border-gray-300 flex items-center p-4 font-bold text-gray-800";
+          headerPlaceholder.textContent = "Tareas / Sprints";
+
+          gridContainer.appendChild(taskGridContainer);
+          ganttContainer.appendChild(headerPlaceholder);
+          ganttContainer.appendChild(timelineHeader);
+          ganttContainer.appendChild(taskListContainer);
+          ganttContainer.appendChild(gridContainer);
+          ganttChartContainer.appendChild(ganttContainer);
+        }
+
+        ganttChartContainer.addEventListener("click", (e) => {
+          const header = e.target.closest("[data-sprint-toggle]");
+          if (header) {
+            const sprintId = header.dataset.sprintToggle;
+            sprintStates[sprintId] = !sprintStates[sprintId];
             renderGantt();
-            window.addEventListener('resize', renderGantt);
+          }
         });
+
+        renderGantt();
+        window.addEventListener("resize", renderGantt);
+      });
     </script>
-</body>
+  </body>
 </html>
