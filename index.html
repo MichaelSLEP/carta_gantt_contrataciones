@@ -132,408 +132,96 @@
       class="max-w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden"
     >
       <div class="p-6 border-b bg-gray-50 rounded-t-xl">
-        <h1 class="text-2xl font-bold text-gray-900">
-          Diagrama de Gantt: Proyecto Sistema de Contrataciones SLEP
-        </h1>
-        <p class="text-gray-600 mt-1">
-          Cronograma visual e interactivo del proyecto. Haz clic en un sprint
-          para expandir/colapsar.
-        </p>
+        <div class="flex items-center">
+          <img
+            src="./Logo.png"
+            alt="Logo Contrataciones SLEP"
+            class="h-16 w-auto rounded-md mr-6"
+          />
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">
+              Diagrama de Gantt: Proyecto Sistema de Contrataciones SLEP
+            </h1>
+            <p class="text-gray-600 mt-1">
+              Cronograma visual e interactivo del proyecto. Haz clic en un
+              sprint para expandir/colapsar.
+            </p>
+          </div>
+        </div>
       </div>
-      <div id="gantt-chart" class="overflow-x-auto">
-        <!-- El contenido del diagrama se generará con JavaScript -->
+      <div
+        id="gantt-chart"
+        class="overflow-x-auto min-h-[500px] flex items-center justify-center"
+      >
+        <!-- Loading state -->
+        <div id="loading-state">
+          <p class="text-gray-500">Cargando datos del proyecto...</p>
+        </div>
       </div>
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // --- DATOS DEL PROYECTO (CRONOGRAMA RECALCULADO) ---
-        const projectData = [
-          {
-            id: "s1",
-            name: "Sprint 1: Fundación y Arquitectura",
-            start: "2025-06-25",
-            end: "2025-07-18",
-            type: "sprint",
-          },
-          {
-            id: 1.1,
-            name: "Documentar flujos y reglas de negocio",
-            start: "2025-06-25",
-            end: "2025-07-02",
-            parent: "s1",
-          },
-          {
-            id: 1.2,
-            name: "Diseñar esquemas de las 3 BDs",
-            start: "2025-07-03",
-            end: "2025-07-09",
-            parent: "s1",
-          },
-          {
-            id: 1.3,
-            name: "Definir contratos de las 3 APIs",
-            start: "2025-07-10",
-            end: "2025-07-15",
-            parent: "s1",
-          },
-          {
-            id: 1.4,
-            name: "Configurar repositorios y entornos",
-            start: "2025-07-17",
-            end: "2025-07-18",
-            parent: "s1",
-          },
-          {
-            id: 1.6,
-            name: "Hito 1: Arquitectura y Diseño Aprobado",
-            start: "2025-07-18",
-            end: "2025-07-18",
-            type: "milestone",
-            parent: "s1",
-          },
-
-          {
-            id: "s2",
-            name: "Sprint 2: Construcción Servicio Candidatos",
-            start: "2025-07-21",
-            end: "2025-08-01",
-            type: "sprint",
-          },
-          {
-            id: 2.1,
-            name: "Crear proyecto y conexión a BD",
-            start: "2025-07-21",
-            end: "2025-07-21",
-            parent: "s2",
-          },
-          {
-            id: 2.2,
-            name: "Desarrollar endpoints CRUD y subida de CV",
-            start: "2025-07-22",
-            end: "2025-07-28",
-            parent: "s2",
-          },
-          {
-            id: 2.3,
-            name: "Desarrollar búsqueda y filtros",
-            start: "2025-07-29",
-            end: "2025-07-31",
-            parent: "s2",
-          },
-          {
-            id: 2.4,
-            name: "Escribir pruebas unitarias",
-            start: "2025-08-01",
-            end: "2025-08-01",
-            parent: "s2",
-          },
-
-          {
-            id: "s3",
-            name: "Sprint 3: Construcción Servicio Dotación",
-            start: "2025-08-04",
-            end: "2025-08-14",
-            type: "sprint",
-          },
-          {
-            id: 3.1,
-            name: "Crear proyecto y conexión a BD",
-            start: "2025-08-04",
-            end: "2025-08-04",
-            parent: "s3",
-          },
-          {
-            id: 3.2,
-            name: "Desarrollar endpoints CRUD y Auth",
-            start: "2025-08-05",
-            end: "2025-08-08",
-            parent: "s3",
-          },
-          {
-            id: 3.3,
-            name: "Desarrollar carga masiva y asignación",
-            start: "2025-08-11",
-            end: "2025-08-13",
-            parent: "s3",
-          },
-          {
-            id: 3.4,
-            name: "Escribir pruebas unitarias",
-            start: "2025-08-14",
-            end: "2025-08-14",
-            parent: "s3",
-          },
-
-          {
-            id: "s4",
-            name: "Sprint 4: Construcción Servicio Solicitudes",
-            start: "2025-08-18",
-            end: "2025-08-29",
-            type: "sprint",
-          },
-          {
-            id: 4.1,
-            name: "Crear proyecto y conexión a BD",
-            start: "2025-08-18",
-            end: "2025-08-18",
-            parent: "s4",
-          },
-          {
-            id: 4.2,
-            name: "Desarrollar endpoints CRUD y derivación",
-            start: "2025-08-19",
-            end: "2025-08-22",
-            parent: "s4",
-          },
-          {
-            id: 4.3,
-            name: "Implementar flujo de aprobación",
-            start: "2025-08-25",
-            end: "2025-08-28",
-            parent: "s4",
-          },
-          {
-            id: 4.5,
-            name: "Escribir pruebas unitarias",
-            start: "2025-08-29",
-            end: "2025-08-29",
-            parent: "s4",
-          },
-          {
-            id: 4.6,
-            name: "Hito 2: Backend Completo",
-            start: "2025-08-29",
-            end: "2025-08-29",
-            type: "milestone",
-            parent: "s4",
-          },
-
-          {
-            id: "s5",
-            name: "Sprint 5: Frontend - Vistas de Gestión",
-            start: "2025-09-01",
-            end: "2025-09-12",
-            type: "sprint",
-          },
-          {
-            id: 5.1,
-            name: "Configurar proyecto y enrutamiento",
-            start: "2025-09-01",
-            end: "2025-09-02",
-            parent: "s5",
-          },
-          {
-            id: 5.2,
-            name: "UI: Login y gestión de Dotación",
-            start: "2025-09-03",
-            end: "2025-09-08",
-            parent: "s5",
-          },
-          {
-            id: 5.5,
-            name: "UI: Gestión de Candidatos",
-            start: "2025-09-09",
-            end: "2025-09-12",
-            parent: "s5",
-          },
-
-          {
-            id: "s6",
-            name: "Sprint 6: Frontend - Flujo de Solicitud",
-            start: "2025-09-15",
-            end: "2025-09-26",
-            type: "sprint",
-          },
-          {
-            id: 6.1,
-            name: "UI: Formulario de nueva solicitud",
-            start: "2025-09-15",
-            end: "2025-09-17",
-            parent: "s6",
-          },
-          {
-            id: 6.3,
-            name: "UI: Bandeja de Entrada y Detalle",
-            start: "2025-09-22",
-            end: "2025-09-25",
-            parent: "s6",
-          },
-          {
-            id: 6.5,
-            name: "UI: Lógica de aprobación",
-            start: "2025-09-26",
-            end: "2025-09-26",
-            parent: "s6",
-          },
-          {
-            id: 6.6,
-            name: "Hito 3: Frontend Base Completo",
-            start: "2025-09-26",
-            end: "2025-09-26",
-            type: "milestone",
-            parent: "s6",
-          },
-
-          {
-            id: "s7",
-            name: "Sprint 7: Generación PDF y Notificaciones",
-            start: "2025-09-29",
-            end: "2025-10-08",
-            type: "sprint",
-          },
-          {
-            id: 7.1,
-            name: "Implementar librería de PDFs",
-            start: "2025-09-29",
-            end: "2025-09-30",
-            parent: "s7",
-          },
-          {
-            id: 7.2,
-            name: "Crear plantillas HTML para documentos",
-            start: "2025-10-01",
-            end: "2025-10-06",
-            parent: "s7",
-          },
-          {
-            id: 7.3,
-            name: "Desarrollar endpoint y servicio de correo",
-            start: "2025-10-07",
-            end: "2025-10-08",
-            parent: "s7",
-          },
-
-          {
-            id: "s8",
-            name: "Sprints 8-9: Integración y Pruebas",
-            start: "2025-10-09",
-            end: "2025-10-22",
-            type: "sprint",
-          },
-          {
-            id: 8.2,
-            name: "UI: Asignación de candidato",
-            start: "2025-10-09",
-            end: "2025-10-10",
-            parent: "s8",
-          },
-          {
-            id: 8.3,
-            name: "Pruebas manuales E2E",
-            start: "2025-10-13",
-            end: "2025-10-16",
-            parent: "s8",
-          },
-          {
-            id: 8.5,
-            name: "Corrección de bugs y refinamiento",
-            start: "2025-10-17",
-            end: "2025-10-22",
-            parent: "s8",
-          },
-          {
-            id: 8.6,
-            name: "Hito 4: Demo de Integración",
-            start: "2025-10-22",
-            end: "2025-10-22",
-            type: "milestone",
-            parent: "s8",
-          },
-
-          {
-            id: "s9",
-            name: "Sprints 10-11: UAT y Despliegue",
-            start: "2025-10-23",
-            end: "2025-11-07",
-            type: "sprint",
-          },
-          {
-            id: 9.1,
-            name: "Preparar entorno y datos para UAT",
-            start: "2025-10-23",
-            end: "2025-10-24",
-            parent: "s9",
-          },
-          {
-            id: 9.2,
-            name: "Ejecutar UAT y recoger feedback",
-            start: "2025-10-27",
-            end: "2025-10-29",
-            parent: "s9",
-          },
-          {
-            id: 9.3,
-            name: "Configurar infraestructura en la nube",
-            start: "2025-10-30",
-            end: "2025-11-04",
-            parent: "s9",
-          },
-          {
-            id: 9.4,
-            name: "Despliegue en producción (Go-Live)",
-            start: "2025-11-05",
-            end: "2025-11-06",
-            parent: "s9",
-          },
-          {
-            id: 9.5,
-            name: "Redactar Manuales",
-            start: "2025-11-07",
-            end: "2025-11-07",
-            parent: "s9",
-          },
-          {
-            id: 9.6,
-            name: "Hito 5: Puesta en Producción",
-            start: "2025-11-07",
-            end: "2025-11-07",
-            type: "milestone",
-            parent: "s9",
-          },
-
-          {
-            id: "s10",
-            name: "Sprints 12-13: Soporte y Cierre",
-            start: "2025-11-10",
-            end: "2025-12-26",
-            type: "sprint",
-          },
-          {
-            id: 10.1,
-            name: "Soporte y monitoreo (3 semanas)",
-            start: "2025-11-10",
-            end: "2025-11-28",
-            parent: "s10",
-          },
-          {
-            id: 10.2,
-            name: "Resolución de incidencias",
-            start: "2025-12-01",
-            end: "2025-12-23",
-            parent: "s10",
-          },
-          {
-            id: 10.5,
-            name: "Reunión y Acta de Cierre",
-            start: "2025-12-26",
-            end: "2025-12-26",
-            parent: "s10",
-          },
-          {
-            id: 10.6,
-            name: "Hito 6: Cierre de Proyecto",
-            start: "2025-12-26",
-            end: "2025-12-26",
-            type: "milestone",
-            parent: "s10",
-          },
-        ];
+      document.addEventListener("DOMContentLoaded", async function () {
+        // --- CONFIGURACIÓN DE LA HOJA DE CÁLCULO ---
+        const GOOGLE_SHEET_URL =
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAavprne9VKaV0I3O2hLisg5lsR7-Q3GAtoA71SX-MZ0b-T6KBCT-ddLFuTrfKLxOaSTqayPxfqwAA/pub?gid=0&single=true&output=csv";
 
         const ganttChartContainer = document.getElementById("gantt-chart");
+        const loadingState = document.getElementById("loading-state");
 
-        const projectStartDate = new Date("2025-06-24T00:00:00");
-        const projectEndDate = new Date("2025-12-27T00:00:00");
+        async function fetchProjectData(url) {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(
+                `Error al cargar la hoja de cálculo: ${response.statusText}`
+              );
+            }
+            const csvText = await response.text();
+            return parseCSV(csvText);
+          } catch (error) {
+            ganttChartContainer.innerHTML = `<div class="text-red-500 p-8 text-center"><b>Error:</b> No se pudieron cargar los datos del proyecto. <br><small>${error.message}</small><br><small>Por favor, revisa que la URL de la Hoja de Cálculo sea correcta y que esté publicada en la web.</small></div>`;
+            return null;
+          }
+        }
+
+        function parseCSV(text) {
+          const rows = text.split(/\r?\n/).slice(1);
+          return rows
+            .map((row) => {
+              const columns = row.split(",");
+              return {
+                id: columns[0] ? columns[0].trim() : null,
+                name: columns[1] ? columns[1].trim() : null,
+                start: columns[2] ? columns[2].trim() : null,
+                end: columns[3] ? columns[3].trim() : null,
+                type: columns[4] ? columns[4].trim() : null,
+                parent: columns[5] ? columns[5].trim() : null,
+              };
+            })
+            .filter(
+              (task) =>
+                task.id && task.name && task.start && task.end && task.type
+            );
+        }
+
+        const projectData = await fetchProjectData(GOOGLE_SHEET_URL);
+
+        if (!projectData || projectData.length === 0) {
+          if (!ganttChartContainer.querySelector(".text-red-500")) {
+            ganttChartContainer.innerHTML = `<div class="text-gray-500 p-8 text-center">No se encontraron datos en la hoja de cálculo.</div>`;
+          }
+          return;
+        }
+
+        loadingState.classList.add("hidden");
+
+        const projectStartDate = new Date(projectData[0].start + "T00:00:00");
+        projectStartDate.setDate(projectStartDate.getDate() - 1);
+
+        const lastTask = projectData[projectData.length - 1];
+        const projectEndDate = new Date(lastTask.end + "T00:00:00");
+        projectEndDate.setDate(projectEndDate.getDate() + 2);
 
         const sprintStates = {};
         projectData
@@ -813,7 +501,7 @@
 
           const headerPlaceholder = document.createElement("div");
           headerPlaceholder.className =
-            "sticky top-0 z-20 bg-gray-200 border-b border-r border-gray-300 flex items-center p-4 font-bold text-gray-800";
+            "sticky top-0 z-20 h-[49px] bg-gray-200 border-b border-r border-gray-300 flex items-center p-4 font-bold text-gray-800";
           headerPlaceholder.textContent = "Tareas / Sprints";
 
           gridContainer.appendChild(taskGridContainer);
